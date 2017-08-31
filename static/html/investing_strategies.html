@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.text-muted {
+        color: #777;
+}
+
+/* Sticky footer styles
+   -------------------------------------------------- */
+html {
+      position: relative;
+            min-height: 100%;
+}
+body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+      padding-top: 60px;
+}
+.footer {
+      position: absolute;
+            bottom: 0;
+                  //width: 100%;
+                    /* Set the fixed height of the footer here */
+                    height: 60px;
+}
+
+
+/* Custom page CSS
+   -------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+//      padding: 60px 15px 0;
+}
+.container .text-muted {
+      margin: 20px 0;
+}
+
+.footer > .container {
+      padding-right: 15px;
+            padding-left: 15px;
+}
+
+code {
+      font-size: 80%;
+}
+
+.main_icon {
+    height: 50px;
+    width: 50px;
+}
+
+.scroll-box {
+    //background: #474749;
+    background: #222;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    height: 100%; /* maximum height of the box, feel free to change this! */
+    width: 17%;
+    overflow-y: auto;
+    right: 0;
+    top: 51px;
+    position:fixed;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+</style>
+<script>
+/* ------------------------------------------------------------------------- */
+/* Developer: Andrew Kirfman                                                 */
+/* Project: Smart Greenhouse                                                 */
+/*                                                                           */
+/* File: ./main_screen.js                                                    */
+/* ------------------------------------------------------------------------- */
+
+var widget_height = 790;
+
+
+/* ------------------------------------------------------------------------- */
+/* Code to Execute on Page Load                                              */
+/* ------------------------------------------------------------------------- */
+
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+
+    if(typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }
+    else
+    {
+        window.onload = function()
+        {
+            if(oldonload)
+            {
+                oldonload();
+            }
+
+            func();
+        };
+    }
+}
+
+function update_footer_date()
+{
+    date = new Date().getFullYear();
+    document.getElementById('footer-text').innerHTML = "&copy; "
+        + date + ": Andrew Kirfman & Cuong Do";
+};
+
+addLoadEvent(update_footer_date);
+
+
+/* ------------------------------------------------------------------------- */
+/* Initial Variable Declarations                                             */
+/* ------------------------------------------------------------------------- */
+
+var host_parser = document.createElement('a');
+host_parser.href = window.location.href;
+var host_addr = host_parser.host;
+
+/* ------------------------------------------------------------------------- */
+/* Websocket Communication                                                   */
+/* ------------------------------------------------------------------------- */
+
+var socket_addr = "ws://" + host_addr + "/ws_ticker";
+var ws = new WebSocket(socket_addr);
+
+ws.onopen = function()
+{  };
+
+ws.onmessage = function(received_message)
+{
+    var message_text = received_message.data.trim();
+
+    // If the ticker was valid, move the site a new page
+    if(message_text.indexOf("ValidationSucceeded") >= 0)
+    {
+        var fields = message_text.split(":");
+        var ticker = fields[1];
+
+        window.location.href = "/ticker?" + String(ticker);
+    }
+    // If it was not valid, tell the user and stay here
+    else if(message_text.indexOf("ValidationFailed") >= 0)
+    {
+        // Indicate that the search failed
+
+    }
+};
+
+
+ws.onclose = function()
+{  };
+
+/* ------------------------------------------------------------------------- */
+/* Go To Ticker                                                              */
+/* ------------------------------------------------------------------------- */
+
+function GoToTicker()
+{
+	var ticker_name = document.getElementById("ticker-text").value.trim().toUpperCase()
+	
+	ws.send("ValidateTicker:" + String(ticker_name));
+}
+
+
+
+
+
+
+
+</script>
+<head>
+    <title>InvestmentAggregator: Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body class="body" style="background: #2a2c39 !important">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<!-- I want to add in a website logo later on -->
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/" style="color:#ffffff">InvestmentAggregator</a>
+			</div>
+			
+			<ul class="nav navbar-nav">
+				<li><a href="/investing_tips" style="color:#ffffff">Investing Basics</a></li>
+				<li><a href="/investing_strategies" style="color:#ffffff">Simple Strategies</a></li>
+			</ul>
+			<form class="navbar-form navbar-left" onsubmit="return false;">
+				<div class="input-group">
+					<input type="text" class="form-control" 
+						placeholder="Stock Ticker" id="ticker-text">
+					<div class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="GoToTicker()">
+							<i class="glyphicon glyphicon-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</nav>
+    <div class="container-fluid">
+		
+		<div class="row">
+			
+			<div class="col-md-12" style="width:82%;height:70%;left: 0.5%;">
+				<h3 style="color: #3BB3E4;"> 3 Simple Investing Strategies for a Happy Retirement </h3>
+				<p style="color: #ffffff; font-size:16px">  
+				Investing can often seem more complicated than it needs to be. With a financial services industry worth billions of dollars, that may be by design, but investors new and old can find success with a few basic rules. The most important of those is compound interest. Thanks to this simple piece of math, returns will accelerate over time as your holdings increase in value.
+
+				Beginning investors should be bear in mind that even experts can't beat the market consistently. After all, the market is endlessly complex, with thousands of stock prices, moving every second. There's more information than any single investor can take in, but while the market is complex, making money doesn't have to be.
+
+				The fact that it's so hard to beat the market should give solace to investors satisfied to make average returns the easy way. Here are three simple strategies that even the newest investor can learn to build savings for a happy retirement.
+				</p>
+			<ol>
+				<li style="color: #ADADAD; font-size:16px"> 
+				Index funds
+					<ul style="color: #ffffff; font-size:16px">
+						<li>
+						There's no need to pick individual stock when index funds are available. Index funds offer an easy way to invest your money into the market by allocating it into an exchange-traded fund that tracks the S&P 500 or another index for a low annual fee. For investors looking to get into stocks, and you should be, considering the historical average annual return is near 10%, this is one of the safest ways to do it.
+						</li>
+						<li>
+						Among the index funds worth considering are the Vanguard 500 Index Fund (NYSEMKT:VOO), which is the lowest-cost index fund, with an expense ratio of just 0.05% -- in other words, an annual fee of just $0.05 per $100 invested.  Those with more than $10,000 to invest may want to choose the Vanguard 500 Index Fund Admiral Class (NASDAQMUTFUND:VFIAX), which unlike the above index fund does not require transaction fees to buy shares. If you're planning to add money to your fund regularly, this may be a better option.
+						</li>
+						<li>
+						For an index fund of small-cap stocks, you could choose the Vanguard Russell 2000 Index Fund (NASDAQMUTFUND:VRTIX), which has an expense ratio of just 0.08%. 
+						</li>
+						<li>
+						Even the great oracle Warren Buffett recommends that 90% of his estate be put in a low-cost S&P 500 index fund.
+						</li>	
+					</ul>
+				</li>
+
+				<li style="color: #ADADAD; font-size:16px"> 
+				Dividend reinvestment
+					<ul style="color: #ffffff; font-size:16px">
+						<li> 
+						Dividends should be a part of any investor's long-term strategy. Not only have dividend stocks been shown to outperform non-dividend payers, but the income can give you extra spending money or even better, accelerate your returns through a dividend reinvestment plan (Drip).  Hundreds of stocks allow shareholders to enroll in DRIP plans directly, and for the ones that don't, most major brokerages will set you up to reinvest dividend income. Once enrolled, the process is entirely automated, requiring basically no attention.
+						</li>
+						<li>
+						How powerful is dividend reinvesting? Over the last ten years, the S&P's annualized total return is just 4.9%, but with dividends reinvested its 7.1%. Over the 10-year span, reinvesting dividends would increase your return 61.3% to 98.1%.   
+						</li>
+						<li>
+						Over the last 20 years, the difference in total gains is 214% vs. 351%, and that's with the S&P 500, which pays a modest dividend yield of just 2% now. With high dividend stocks, the difference is much greater.
+						</li>
+					</ul>
+				</li>
+
+				<li style="color: #ADADAD; font-size:16px"> 
+				Buy and hold 
+					<ul style="color: #ffffff; font-size:16px">
+						<li> 
+						What could be a simpler investing strategy than buying a stock and holding it for most of the rest of your life? Buying and holding is a favorite investing technique of Buffett and plenty of other investing gurus. Not only is the strategy a simple one, but it is also productive. Holding stocks for a longer period of time helps counteract volatility and prevents panic selling. For example, from 1926-2011, the one-year return on the S&P 500 ranged from -43% to 64%, but a 20-year annualized return over the same period was between 3.1% and 17.9%. While the midpoint of the two is roughly the same, the risk is much is lower in the 20-year return. In fact, there has been no point in the last 90 years at least when holding stocks did not generate a positive return. Market timing, the opposite of buy and hold, could lead to outsize returns but also steep losses.
+						</li>
+						<li>
+						Another benefit of buy-and-hold investing is that it acts like a tax shelter. If you're investing outside of a retirement account like a 401 (k) or an IRA, you'll get hit with a capital gains tax every time you sell and an even stiffer tax if your holding period is less than a year. Similarly, by avoiding frequent trading, you also escape the brokerage fees and commissions that come with trading stocks. 
+						</li>
+						<li>
+						For dividend investors, the strategy provides an added benefit for growing dividend stocks -- the yield improves every time the dividend goes up since your actual yield is determined by your cost basis. 
+						</li>
+						<li>
+						For the ultimate simple investing strategy, consider combing the three tactics above. It's easy to build your nest egg by keeping your money in an index fund for the long term and reinvesting the dividends. Thanks to the magic of compound interest, investing just $5,000 a year will turn into $1 million after 30 years, assuming a 10% annual return. That's the power of simple investing. 
+						</li>
+					</ul>
+				</li>
+			</ol>
+				<h3 style="color: #3BB3E4;">
+					Reference
+				</h3>
+				<a href="https://www.fool.com/retirement/2016/05/31/3-simple-investing-strategies-for-a-happy-retireme.aspx">
+					<p style="color: #ffffff; font-size:16px">Click here to view the full article </p>
+				</a>
+			</div>
+
+			
+			
+	
+		</div>
+	
+	<div class="row">
+			<div class="col-md-12" style="padding-bottom:5%">
+			</div>
+		</div>	
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p id="footer-text" class="text-muted"></p>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+

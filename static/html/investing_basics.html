@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+</style>
+<script>
+var stock_ticker = window.location.href.split("?")[1];
+var stocktwits_title = stock_ticker;
+
+/* ------------------------------------------------------------------------- */
+/* Code to Execute on Page Load                                              */
+/* ------------------------------------------------------------------------- */
+
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+
+    if(typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }
+    else
+    {
+        window.onload = function()
+        {
+            if(oldonload)
+            {
+                oldonload();
+            }
+
+            func();
+        };
+    }
+}
+
+var host_parser = document.createElement('a');
+host_parser.href = window.location.href;
+var host_addr = host_parser.host;
+
+/* ------------------------------------------------------------------------- */
+/* Websocket Communication                                                   */
+/* ------------------------------------------------------------------------- */
+
+var socket_addr = "ws://" + host_addr + "/investing_basics";
+var ws = new WebSocket(socket_addr);
+
+ws.onopen = function()
+{
+
+}
+
+ws.onmessage = function(received_message)
+{
+
+}
+
+ws.onclose = function()
+{
+
+}
+
+</script>
+
+<head>
+</head>
+
+<body>
+	<p> Tesing </p>
+</body>

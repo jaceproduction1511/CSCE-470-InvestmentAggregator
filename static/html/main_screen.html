@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.text-muted {
+        color: #777;
+}
+
+/* Sticky footer styles
+   -------------------------------------------------- */
+html {
+      position: relative;
+            min-height: 100%;
+}
+body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+      padding-top: 60px;
+}
+.footer {
+      position: absolute;
+            bottom: 0;
+                  //width: 100%;
+                    /* Set the fixed height of the footer here */
+                    height: 60px;
+}
+
+
+/* Custom page CSS
+   -------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+//      padding: 60px 15px 0;
+}
+.container .text-muted {
+      margin: 20px 0;
+}
+
+.footer > .container {
+      padding-right: 15px;
+            padding-left: 15px;
+}
+
+code {
+      font-size: 80%;
+}
+
+.main_icon {
+    height: 50px;
+    width: 50px;
+}
+
+.scroll-box {
+    //background: #474749;
+    background: #222;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    height: 100%; /* maximum height of the box, feel free to change this! */
+    width: 17%;
+    overflow-y: auto;
+    right: 0;
+    top: 51px;
+    position:fixed;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+</style>
+<script>
+/* ------------------------------------------------------------------------- */
+/* Developer: Andrew Kirfman                                                 */
+/* Project: Smart Greenhouse                                                 */
+/*                                                                           */
+/* File: ./main_screen.js                                                    */
+/* ------------------------------------------------------------------------- */
+
+var widget_height = 790;
+
+
+/* ------------------------------------------------------------------------- */
+/* Code to Execute on Page Load                                              */
+/* ------------------------------------------------------------------------- */
+
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+
+    if(typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }
+    else
+    {
+        window.onload = function()
+        {
+            if(oldonload)
+            {
+                oldonload();
+            }
+
+            func();
+        };
+    }
+}
+
+function update_footer_date()
+{
+    date = new Date().getFullYear();
+    document.getElementById('footer-text').innerHTML = "&copy; "
+        + date + ": Andrew Kirfman & Cuong Do";
+};
+
+addLoadEvent(update_footer_date);
+
+
+/* ------------------------------------------------------------------------- */
+/* Initial Variable Declarations                                             */
+/* ------------------------------------------------------------------------- */
+
+var host_parser = document.createElement('a');
+host_parser.href = window.location.href;
+var host_addr = host_parser.host;
+
+/* ------------------------------------------------------------------------- */
+/* Websocket Communication                                                   */
+/* ------------------------------------------------------------------------- */
+
+var socket_addr = "ws://" + host_addr + "/ws_ticker";
+var ws = new WebSocket(socket_addr);
+
+ws.onopen = function()
+{  };
+
+ws.onmessage = function(received_message)
+{
+    var message_text = received_message.data.trim();
+
+    // If the ticker was valid, move the site a new page
+    if(message_text.indexOf("ValidationSucceeded") >= 0)
+    {
+        var fields = message_text.split(":");
+        var ticker = fields[1];
+
+        window.location.href = "/ticker?" + String(ticker);
+    }
+    // If it was not valid, tell the user and stay here
+    else if(message_text.indexOf("ValidationFailed") >= 0)
+    {
+        // Indicate that the search failed
+
+    }
+};
+
+
+ws.onclose = function()
+{  };
+
+/* ------------------------------------------------------------------------- */
+/* Go To Ticker                                                              */
+/* ------------------------------------------------------------------------- */
+
+function GoToTicker()
+{
+	var ticker_name = document.getElementById("ticker-text").value.trim().toUpperCase()
+	
+	ws.send("ValidateTicker:" + String(ticker_name));
+}
+
+</script>
+<head>
+    <title>InvestmentAggregator: Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body class="body" style="background: #2a2c39 !important">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<!-- I want to add in a website logo later on -->
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/" style="color:#ffffff">InvestmentAggregator</a>
+			</div>
+			
+			<ul class="nav navbar-nav">
+				<li><a href="/investing_tips" style="color:#ffffff">Investing Basics</a></li>
+				<li><a href="/investing_strategies" style="color:#ffffff">Simple Strategies</a></li>
+			</ul>
+			<form class="navbar-form navbar-left" onsubmit="return false;">
+				<div class="input-group">
+					<input type="text" class="form-control" 
+						placeholder="Stock Ticker" id="ticker-text">
+					<div class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="GoToTicker()">
+							<i class="glyphicon glyphicon-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</nav>
+    <div class="container-fluid">
+		
+		<div class="row">
+			
+			<div class="col-md-10" style="width:82%;height:70%;left: 0.5%;" id="tradingview-div">
+				<h3 style="color: #ffffff;">Markets at a Glance:</h3>
+
+				<script type="text/javascript" src="https://s3.amazonaws.com/tradingview/tv.js"></script>    
+				<script type="text/javascript">      
+					x = new TradingView.MiniWidget({        
+						container_id: 'tv-miniwidget-2', 
+						tabs: ['Equities', 'Commodities', 'Bonds', 'Forex'], 
+						symbols: {          
+							Equities: ['S&P500', 'NQ100', 'Dow30', 'Nikkei225'/*, 'Apple', 'Google'*/], 
+							Commodities: ['Emini', 'Euro', 'Gold', 'Oil', 'Gas', 'Corn'], 
+							Bonds: ['US 2YR', 'US 10YR', 'US 30YR', 'Euro Bund', 'Euro BTP', 'Euro BOBL'], 
+							Forex: ['FX:EURUSD', 'FX:GBPUSD', 'FX:USDJPY', 'FX:USDCHF', 'FX:AUDUSD', 'FX:USDCAD']        
+						}, 
+						symbols_description: {          
+							'S&P500': ' SPX', 
+							'NQ100': 'NASX', 
+							'Dow30': 'DOWI', 
+							'Nikkei225': 'NKY', 
+							//'Apple': ' BATS:AAPL ', 
+							//'Google': 'BATS:GOOG', 
+							'Emini': 'ES1!', 
+							'Euro': 'E61!', 
+							'Gold': 'GC1!', 
+							'Oil': 'CL1!', 
+							'Gas': 'NG1!', 
+							'Corn': 'ZC1!', 
+							'US 2YR': 'TUZ2013', 
+							'US 10YR': 'TYZ2013', 
+							'US 30YR': 'USZ2013', 
+							'Euro Bund': 'FX:BUND', 
+							'Euro BTP': 'EUREX:II1!', 
+							'Euro BOBL': 'EUREX:HR1!'        
+						}, 
+					width: "100%", 
+					height: "100%",
+					height: widget_height,
+					showChart: "true",
+					plotLineColorGrowing: "3cbc98",
+					styleTickerLastUpBg: "3cbc98",
+					gridLineColor: "e9e9ea",
+					styleTickerChangeUpColor: "3cbc98",
+					styleTickerChangeDownColor: "3cbc98",
+					large_chart_url: 'http://www.futuresmag.com/page/interactive-charts'      
+					});    
+				</script>
+			</div>
+			
+			
+			<div class="col-md-2">
+				<div class="scroll-box">
+					<h3 style="color:#ffffff">How to use this site!</h3>
+					
+					<p style="font-size:16px;color: #ffffff;">
+					InvestmentAggregator.com is a website which aims to serve as a "one stop shop" for all investing and trading information.  No longer will an investor have to visit 10 different sites just
+					to do research and educate themselves enough to know which stocks to buy.  
+					</p>
+					
+					<p style="font-size:16px;color: #ffffff;">
+					Simply search for a stock by the ticker name and you will be whisked away to a page containing data and in depth analytics which will assist you in making educated investment decisions.  
+					
+					<p style="font-size:16px;color: #ffffff;">
+					If you are a new investor, please see the tabs "Investing Basics" and "Simple Strategies" for help getting started.  
+					</p>
+				</div>
+			</div>
+		
+		
+		
+		
+		</div>
+		
+    </div>
+
+
+
+
+    <footer class="footer">
+        <div class="container">
+            <p id="footer-text" class="text-muted"></p>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+

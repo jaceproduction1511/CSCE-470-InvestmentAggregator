@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.text-muted {
+        color: #777;
+}
+
+/* Sticky footer styles
+   -------------------------------------------------- */
+html {
+      position: relative;
+            min-height: 100%;
+}
+body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+      padding-top: 60px;
+}
+.footer {
+      position: absolute;
+            bottom: 0;
+                  //width: 100%;
+                    /* Set the fixed height of the footer here */
+                    height: 60px;
+}
+
+
+/* Custom page CSS
+   -------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+//      padding: 60px 15px 0;
+}
+.container .text-muted {
+      margin: 20px 0;
+}
+
+.footer > .container {
+      padding-right: 15px;
+            padding-left: 15px;
+}
+
+code {
+      font-size: 80%;
+}
+
+.main_icon {
+    height: 50px;
+    width: 50px;
+}
+
+.scroll-box {
+    //background: #474749;
+    background: #222;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    height: 100%; /* maximum height of the box, feel free to change this! */
+    width: 17%;
+    overflow-y: auto;
+    right: 0;
+    top: 51px;
+    position:fixed;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+
+</style>
+<script>
+/* ------------------------------------------------------------------------- */
+/* Developer: Andrew Kirfman                                                 */
+/* Project: Smart Greenhouse                                                 */
+/*                                                                           */
+/* File: ./main_screen.js                                                    */
+/* ------------------------------------------------------------------------- */
+
+var widget_height = 790;
+
+
+/* ------------------------------------------------------------------------- */
+/* Code to Execute on Page Load                                              */
+/* ------------------------------------------------------------------------- */
+
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+
+    if(typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }
+    else
+    {
+        window.onload = function()
+        {
+            if(oldonload)
+            {
+                oldonload();
+            }
+
+            func();
+        };
+    }
+}
+
+function update_footer_date()
+{
+    date = new Date().getFullYear();
+    document.getElementById('footer-text').innerHTML = "&copy; "
+        + date + ": Andrew Kirfman & Cuong Do";
+};
+
+addLoadEvent(update_footer_date);
+
+
+/* ------------------------------------------------------------------------- */
+/* Initial Variable Declarations                                             */
+/* ------------------------------------------------------------------------- */
+
+var host_parser = document.createElement('a');
+host_parser.href = window.location.href;
+var host_addr = host_parser.host;
+
+/* ------------------------------------------------------------------------- */
+/* Websocket Communication                                                   */
+/* ------------------------------------------------------------------------- */
+
+var socket_addr = "ws://" + host_addr + "/ws_ticker";
+var ws = new WebSocket(socket_addr);
+
+ws.onopen = function()
+{  };
+
+ws.onmessage = function(received_message)
+{
+    var message_text = received_message.data.trim();
+
+    // If the ticker was valid, move the site a new page
+    if(message_text.indexOf("ValidationSucceeded") >= 0)
+    {
+        var fields = message_text.split(":");
+        var ticker = fields[1];
+
+        window.location.href = "/ticker?" + String(ticker);
+    }
+    // If it was not valid, tell the user and stay here
+    else if(message_text.indexOf("ValidationFailed") >= 0)
+    {
+        // Indicate that the search failed
+
+    }
+};
+
+
+ws.onclose = function()
+{  };
+
+/* ------------------------------------------------------------------------- */
+/* Go To Ticker                                                              */
+/* ------------------------------------------------------------------------- */
+
+function GoToTicker()
+{
+	var ticker_name = document.getElementById("ticker-text").value.trim().toUpperCase()
+	
+	ws.send("ValidateTicker:" + String(ticker_name));
+}
+
+</script>
+<head>
+    <title>InvestmentAggregator: Home</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body class="body" style="background: #2a2c39 !important">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<!-- I want to add in a website logo later on -->
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/" style="color:#ffffff">InvestmentAggregator</a>
+			</div>
+			
+			<ul class="nav navbar-nav">
+				<li><a href="/investing_tips" style="color:#ffffff">Investing Basics</a></li>
+				<li><a href="/investing_strategies" style="color:#ffffff">Simple Strategies</a></li>
+			</ul>
+			<form class="navbar-form navbar-left" onsubmit="return false;">
+				<div class="input-group">
+					<input type="text" class="form-control" 
+						placeholder="Stock Ticker" id="ticker-text">
+					<div class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="GoToTicker()">
+							<i class="glyphicon glyphicon-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</nav>
+    <div class="container-fluid">
+		
+		<div class="row">
+			
+			<div class="col-md-12" style="width:82%;height:70%;left: 0.5%;">
+				<h3 style="color: #3BB3E4;"> 10 Things to Know Before You Buy Your First Stock </h3>
+				
+					<p style="color: #ffffff; font-size:16px">  
+					If you don't have any experience investing on your own, getting started can be rather intimidating. It can be difficult to determine how much of your money should be in stocks, what type of stocks you should look for, or what common "rookie mistakes" you should avoid. With that in mind, here are 10 things all investors should keep in mind while getting ready to buy their first stock.
+					</p>
+				<ol>
+					<li style="color: #ADADAD; font-size:16px">  
+					How much of your portfolio should be in stocks?
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							There is no set-in-stone rule, but generally speaking, as you get older and closer to retirement, you should reduce your exposure to stocks in order to preserve your capital. As a rule of thumb, take your age and subtract it from 110 to find the percentage of your portfolio that should be invested in stocks, and adjust this up or down based on your particular appetite for risk.
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">
+					Index funds vs. individual stocks
+						<ul style="color: #ffffff; font-size:16px">
+							<li> 
+							An index fund allows you to invest in many stocks by purchasing one investment. For example, an index fund gives you exposure to all 500 stocks in that index.
+							</li>
+							<li>
+							Index funds can be an excellent tool to diversify your portfolio and reduce your risk. After all, if your money is spread across hundreds of stocks and one crashes, the impact on your overall portfolio is minimal.
+							</li>
+						</ul>
+					</li>
+					
+					<li style="color: #ADADAD; font-size:16px">  
+					How many different stocks should you buy?
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+								If you only want to buy individual stocks, I suggest buying at least 15 different stocks across several different industries in order to properly diversify your portfolio. However, this may not be practical when you're just starting out. 
+							</li>
+
+							<li>
+								An alternative to buying lots of individual stocks is to invest the bulk of your money in index funds, and buy one or two stocks with the rest. This takes most of the guesswork out of investing, while still allowing you to get some experience with evaluating stocks. 
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					Dividends or no dividends?
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							Many stocks choose to distribute their profits to shareholders in the form of dividends, while others choose to use their profits to reinvest in the growth of the company. In general (but not always), dividend stocks tend to be less volatile and more defensive than non-dividend stocks. It's important to note that just because a company pays a high dividend doesn't necessarily mean that it's a better investment.
+							</li>
+							<li>
+							Over the past 80 years, dividends were responsible for 44% of the total return of the S&P 500 index, and dividend reinvestment can be an extremely powerful tool for creating long-term wealth.
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					How much profit can you expect?
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							I'd advise new investors to take a long-term view of the markets. In any given year, the market could gain or lose a substantial portion of its value. However, over long periods of time the markets are surprisingly consistent. Over any recent 25-year period, the S&P 500 produced average annual total returns of at least 9.28%, so it's fair to expect this level of performance over the long run -- even though over any shorter stretch it can vary significantly.	
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					Only buy what you know
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							One investment rule I never break is that if I can't clearly explain what a company does in a sentence or two, I won't invest in it. For example, I really don't understand most biotech companies (nor have I really tried to), so I'm not going to invest in their stocks. On the other hand, the business models of my largest stock holdings such as Realty Income, FedEx, and Google are rather straightforward. It's important to only invest in businesses that are easy for you to understand, especially while you're just starting out.
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					Watch out for red flags
+					<br>
+					<span style="color: #ffffff; font-size:16px">
+					There are several red flags to watch for when choosing stocks. Just to name a few, beginners should avoid the following types of stocks:
+					</span>
+							<ul style="color: #ffffff; font-size:16px">
+								<li>Companies that don't earn any profits </li>
+								<li>Stocks whose share prices seem to always drop (look at the three- or five-year chart) </li>
+								<li>Companies that are under investigation </li>
+								<li>Companies with lots of debt </li>
+								<li>Stocks with recent dividend cuts, or an unstable dividend history </li>
+							</ul>
+						
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					Know how volatile your stocks are
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							Before you buy a stock, it helps to know how volatile you can expect it to be, which you can determine by looking at its beta (included in virtually any stock quote). A stock's beta essentially compares its volatility to that of the overall S&P 500 index. If the beta is less than one, the stock can be expected to react less to market swings, and if it's greater than one it is more reactive.
+							</li>
+							<li>
+							For example, if a stock's beta is 2.0 and the S&P 500 drops by 5%, its share price could be expected to drop 10%.
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					History tends to repeat itself
+						<ul style="color: #ffffff; font-size:16px">
+							<li>
+							Although past performance doesn't guarantee future results, there are some historical patterns that tend to continue. Specifically, stocks with a history of profitability and consistent earnings growth tend to keep it up. And, stocks with a strong history of dividend increases are extremely likely to increase their dividends in the future. Do a little research and compare the historical behavior of stocks you're considering.
+							</li>
+						</ul>
+					</li>
+
+					<li style="color: #ADADAD; font-size:16px">  
+					Rookie mistakes to avoid
+						<br> 
+						<span style="color: #ffffff; font-size:16px">
+						Finally, there are some dangerous traps rookie investors should avoid. This is not an exhaustive list, but these are among the most costly:
+						</span>
+							<ul style="color: #ffffff; font-size:16px">
+								<li>
+									Buying penny stocks: Avoid "penny stocks," which I define as any stock trading for less than $5 or any stock that doesn't trade on the Nasdaq or NYSE. Of course, there are exceptions, but it's probably a good idea for beginners to steer clear of these.
+								</li>
+								<li>
+									Buying stocks on "rumors": Never buy a stock because it's "about to" do anything. Always do thorough research and make a well-informed decision with the long term in mind.
+								</li>
+								<li>
+									Using margin: There are some valid reasons to use margin (borrowed money), but beginners shouldn't touch it. Investing on margin can amplify your returns, but it can also increase your losses.
+								</li>
+							</ul>
+						
+					</li>
+				</ol>
+
+				<h3 style="color: #3BB3E4;">
+					Never stop learning
+				</h3>
+
+				<p style="color: #ffffff; font-size:16px">  
+				
+				As an experienced investor, one of the most valuable lessons I've learned is that I'll never know everything about investing. The smartest thing you can do is to continuously absorb information about how the markets work, how to evaluate stocks, and other investing topics. If you do that, your investing skills will grow over time, and so will your portfolio.
+				</p>
+				
+				Some helpful links, for you to learn more about:
+			
+				<h3 style="color: #3BB3E4;">
+					Reference
+				</h3>
+				<a href="https://www.fool.com/knowledge-center/investing-help-for-beginners-10-things-to-know-bef.aspx">
+					<p style="color: #ffffff; font-size:16px">Click here to view the full article </p>
+				</a>
+			</div>
+			
+		</div>
+		
+	<div class="row">
+			<div class="col-md-12" style="padding-bottom:5%">
+			</div>
+		</div>	
+    </div>
+
+
+
+
+    <footer class="footer">
+        <div class="container">
+            <p id="footer-text" class="text-muted"></p>
+        </div>
+    </footer>
+
+
+</body>
+</html>
+

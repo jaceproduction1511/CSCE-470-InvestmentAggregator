@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.text-muted {
+        color: #777;
+}
+
+/* Sticky footer styles
+   -------------------------------------------------- */
+html {
+      position: relative;
+            min-height: 100%;
+}
+body {
+      /* Margin bottom by footer height */
+      margin-bottom: 60px;
+      padding-top: 60px;
+}
+.footer {
+      position: absolute;
+            bottom: 0;
+                  //width: 100%;
+                    /* Set the fixed height of the footer here */
+                    height: 60px;
+}
+
+
+/* Custom page CSS
+   -------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+      padding: 60px 15px 0;
+}
+.container .text-muted {
+      margin: 20px 0;
+}
+
+.footer > .container {
+      padding-right: 15px;
+            padding-left: 15px;
+}
+
+code {
+      font-size: 80%;
+}
+
+.main_icon {
+    height: 50px;
+    width: 50px;
+}
+
+.scroll-box {
+    //background: #222;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    height: 200px; /* maximum height of the box, feel free to change this! */
+    width: 100%;
+    overflow-y: auto;
+    position: static;
+}
+
+.description-text {
+	font-size:16px;
+	color:#ffffff;
+	padding-left:0.5%;
+	padding-right:0.5%;
+}
+
+.stock-info-text {
+	color:#ADADAD;
+	padding-left:5%;
+}
+
+.stock-up-text {
+    color:#38B395;
+    display:inline;
+}
+
+.stock-down-text {
+    color: #BC3D54;
+    display:inline;
+}
+
+.stock-value-text {
+    color:#FFFFFF;
+    display:inline;
+}
+
+.moduleBody {
+    color: #ffffff;
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+}
+
+</style>
+<style>
+header
+{
+	font-family: 'Lobster', cursive;
+	text-align: center;
+	font-size: 25px;	
+}
+
+#info
+{
+	font-size: 18px;
+	color: #555;
+	text-align: center;
+	margin-bottom: 25px;
+}
+
+a{
+	color: #074E8C;
+}
+
+.scrollbar
+{
+	margin-left: 30px;
+	float: left;
+	height: 300px;
+	width: 65px;
+	background: #F5F5F5;
+	overflow-y: scroll;
+	margin-bottom: 25px;
+}
+
+.title-color
+{
+    color: #3BB3E4
+}
+
+#wrapper
+{
+	text-align: center;
+	width: 500px;
+	margin: auto;
+}
+
+/*
+ *  STYLE 1
+ */
+
+#style-1::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	//background-color: #F5F5F5;
+}
+
+#style-1::-webkit-scrollbar
+{
+	width: 12px;
+	//background-color: #F5F5F5;
+}
+
+#style-1::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #222;
+}
+</style>
+<script>
+/* ------------------------------------------------------------------------- */
+/* Developer: Andrew Kirfman                                                 */
+/* Project: Smart Greenhouse                                                 */
+/*                                                                           */
+/* File: ./main_screen.js                                                    */
+/* ------------------------------------------------------------------------- */
+
+var stock_ticker = window.location.href.split("?")[1];
+var stocktwits_title = stock_ticker;
+
+/* ------------------------------------------------------------------------- */
+/* Code to Execute on Page Load                                              */
+/* ------------------------------------------------------------------------- */
+
+function addLoadEvent(func) {
+    var oldonload = window.onload;
+
+    if(typeof window.onload != 'function')
+    {
+        window.onload = func;
+    }
+    else
+    {
+        window.onload = function()
+        {
+            if(oldonload)
+            {
+                oldonload();
+            }
+
+            func();
+        };
+    }
+}
+
+function update_footer_date()
+{
+    date = new Date().getFullYear();
+    document.getElementById('footer-text').innerHTML = "&copy; "
+        + date + ": Andrew Kirfman & Cuong Do";
+};
+
+function set_browser_title()
+{
+	var browserTitle = document.getElementById("main-browser-title")
+	browserTitle.innerHTML = stock_ticker + ": InvestmenetAggregator";
+	
+}
+
+function update_stockinvest()
+{
+    // Set the stockinvest div
+    var stockinvest = document.getElementById("panel-body-2-div");
+    stockinvest.innerHTML = "<object type=\"text/html\" data=\"https://stockinvest.us/technical-analysis/" 
+		+ String(stock_ticker) + "?utm_campaign=2\" style=\"width:100%; height:100%;\"></object>";
+}
+
+function update_stockflare()
+{
+	var stockflare = document.getElementById("panel-body-11-div");
+    stockflare.innerHTML = "<object type=\"text/html\" data=\"https://stockflare.com/$/stocks/" 
+		+ String(stock_ticker) + ".o\" style=\"width:100%; height:100%;\"></object>";	
+}
+
+function update_dividend_history()
+{
+    var stockinvest = document.getElementById("panel-body-4-div");
+    stockinvest.innerHTML = "<object type=\"text/html\" data=\"https://dividata.com/stock/" 
+		+ String(stock_ticker) + "?utm_campaign=2\" style=\"width:100%; height:100%;\"></object>";	
+}
+
+function update_zachs_1()
+{
+
+	var zachs_1 = document.getElementById("panel-body-3-div");
+	zachs_1.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/quote/" 
+		+ String(stock_ticker) + "?utm_campaign=2\" style=\"width:100%; height:100%;\"></object>";
+}
+
+function update_zachs_2()
+{
+	var zachs_2 = document.getElementById("panel-body-5-div");
+	zachs_2.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/chart/" 
+		+ String(stock_ticker) + "/price-consensus-eps-surprise-chart\" style=\"width:100%; height:100%;\"></object>";
+}
+
+function update_zachs_3()
+{
+	var zachs_3 = document.getElementById("panel-body-6-div");
+	zachs_3.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/quote/" 
+		+ String(stock_ticker) + "/financial-overview\" style=\"width:100%; height:100%;\"></object>";
+	
+}
+
+function update_zachs_4()
+{
+	var zachs_4 = document.getElementById("panel-body-7-div");
+	zachs_4.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/quote/" 
+		+ String(stock_ticker) + "/income-statement\" style=\"width:100%; height:100%;\"></object>";	
+}
+
+function update_zachs_5()
+{
+	var zachs_5 = document.getElementById("panel-body-8-div");
+	zachs_5.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/quote/" 
+		+ String(stock_ticker) + "/balance-sheet\" style=\"width:100%; height:100%;\"></object>";
+}
+
+function update_zachs_6()
+{
+	var zachs_6 = document.getElementById("panel-body-9-div")
+	zachs_6.innerHTML = "<object type=\"text/html\" data=\"https://www.zacks.com/stock/quote/" 
+		+ String(stock_ticker) + "/detailed-estimates\" style=\"width:100%; height:100%;\"></object>";
+}
+
+
+addLoadEvent(update_footer_date);
+addLoadEvent(set_browser_title);
+addLoadEvent(update_stockinvest);
+addLoadEvent(update_stockflare);
+addLoadEvent(update_zachs_1);
+addLoadEvent(update_zachs_2);
+addLoadEvent(update_zachs_3);
+addLoadEvent(update_zachs_4);
+addLoadEvent(update_zachs_5);
+addLoadEvent(update_zachs_6);
+addLoadEvent(update_dividend_history);
+
+/* ------------------------------------------------------------------------- */
+/* Initial Variable Declarations                                             */
+/* ------------------------------------------------------------------------- */
+
+var host_parser = document.createElement('a');
+host_parser.href = window.location.href;
+var host_addr = host_parser.host;
+
+/* ------------------------------------------------------------------------- */
+/* Websocket Communication                                                   */
+/* ------------------------------------------------------------------------- */
+
+var socket_addr = "ws://" + host_addr + "/ws_ticker";
+var ws = new WebSocket(socket_addr);
+
+ws.onopen = function()
+{  
+    stock_ticker = host_parser.href.split("?")[1];
+    ws.send("GetStockData:" + String(stock_ticker));
+    ws.send("GetCompanyName:" + String(stock_ticker));
+    ws.send("GetCompanyDesc:" + String(stock_ticker));
+    ws.send("GetCompanyDividend:" + String(stock_ticker));
+    ws.send("GetCompanyDividendRecord:" + String(stock_ticker));
+    ws.send("GetBollinger:" + String(stock_ticker));
+    ws.send("GetSentiment:" + String(stock_ticker));
+};
+
+ws.onmessage = function(received_message)
+{
+    var message_text = received_message.data.trim();
+
+    // If the ticker was valid, move the site a new page
+    if(message_text.indexOf("ValidationSucceeded") >= 0)
+    {
+        var fields = message_text.split(":");
+        var ticker = fields[1];
+
+        window.location.href = "/ticker?" + String(ticker);
+    }
+    // If it was not valid, tell the user and stay here
+    else if(message_text.indexOf("ValidationFailed") >= 0)
+    {
+        // Indicate that the search failed
+    }
+    else if(message_text.indexOf("CompanyName:") >= 0)
+    {
+    	var descriptionTitle = document.getElementById("company-description-title");
+		message_text = message_text.split(":");
+		var company_name = message_text[1];
+		descriptionTitle.innerHTML = String(company_name) + " Company Description";
+    
+    }
+    else if(message_text.indexOf("QueryResult") >= 0)
+    {
+		// Plug the query result into the application. 
+		message_text = message_text.split(":")
+		
+		// Clear the query box before doing anything
+		var parent = document.getElementById("style-1-1");		
+		while(parent.firstChild)
+		{
+			parent.removeChild(parent.firstChild);
+		}
+		
+		var i = 0
+		var new_paragraph = null;
+		for(i = 1; i<= message_text.length; i++)
+		{
+			new_paragraph = document.createElement("p");
+			
+			new_paragraph.style="color:#ffffff;";
+			new_paragraph.innerHTML = message_text[i];
+
+			parent.appendChild(new_paragraph);
+		}
+		
+	}
+    else if(message_text.indexOf("StockData") >= 0)
+    {
+        // Split off the first part of the message
+        var stock_data_dict = message_text.split(";")[1];
+        stock_data_dict = stock_data_dict.split("|");
+
+        // Get current stock price
+        var price = stock_data_dict[0].split(":")[1];
+        var percent_change = stock_data_dict[1].split(":")[1];
+        var previous_close = stock_data_dict[2].split(":")[1];
+        var open_price = stock_data_dict[3].split(":")[1];
+        var volume = stock_data_dict[4].split(":")[1];
+        var pe_ratio = stock_data_dict[5].split(":")[1];
+        var peg_ratio = stock_data_dict[6].split(":")[1];
+        var market_cap = stock_data_dict[7].split(":")[1];
+        var book_value = stock_data_dict[8].split(":")[1];
+        var average_volume = stock_data_dict[9].split(":")[1];
+        var dividend_share = stock_data_dict[10].split(":")[1];
+        var dividend_yield = stock_data_dict[11].split(":")[1];
+        var earnings_per_share = stock_data_dict[12].split(":")[1];
+        var ebitda = stock_data_dict[13].split(":")[1];
+        var fifty_day_ma = stock_data_dict[14].split(":")[1];
+        var days_high = stock_data_dict[15].split(":")[1];
+        var days_low = stock_data_dict[16].split(":")[1];
+        var year_high = stock_data_dict[17].split(":")[1];
+        var year_low = stock_data_dict[18].split(":")[1];
+        var two_hundred_day_ma = stock_data_dict[19].split(":")[1];
+
+        //
+        // Incorporate this current stock price into the existing HTML
+        //
+
+        // Add the price data
+        var price_box = document.getElementById("price");
+        price_box.innerHTML = price_box.innerHTML + 
+            "<h4 id=\"price-box\" class=\"stock-value-text\">$" + String(price) + "</h4>";
+        
+        // Add the percent change data
+        var percent_change_box = document.getElementById("percent-change");
+
+        if(percent_change.indexOf("-") >= 0)
+        {
+            percent_change_box.innerHTML = percent_change_box.innerHTML + 
+                "<h4 id=\"percent-change-box\" class=\"stock-down-text\">"  + String(percent_change) + "</h4>";
+        }
+        else
+        {
+            percent_change_box.innerHTML = percent_change_box.innerHTML + 
+                "<h4 id=\"percent-change-box\" class=\"stock-up-text\">" + String(percent_change) + "</h4>";
+        }
+
+
+        // Add the previous close data
+        var previous_close_box = document.getElementById("previous-close");
+        previous_close_box.innerHTML = previous_close_box.innerHTML + 
+            "<h4 id=\"previous-close-box\" class=\"stock-value-text\">$" + String(previous_close) + "</h4>";
+
+        // Add the open price data
+        var open_price_box = document.getElementById("open");
+        open_price_box.innerHTML = open_price_box.innerHTML + 
+            "<h4 id=\"open-price-box\" class=\"stock-value-text\">$" + String(open_price) + "</h4>";
+
+        // Add the volume data
+        var volume_box = document.getElementById("volume");
+        volume_box.innerHTML = volume_box.innerHTML +
+            "<h4 id=\"volume-box\" class=\"stock-value-text\">" + String(volume) + "</h4>";
+
+        // Add the p/e ratio data
+        var pe_ratio_box = document.getElementById("pe-ratio");
+        pe_ratio_box.innerHTML = pe_ratio_box.innerHTML + 
+            "<h4 id=\"pe-ratio-box\" class=\"stock-value-text\">" + String(pe_ratio) + "</h4>";
+
+        // Add the peg ratio data
+        var peg_ratio_box = document.getElementById("peg-ratio");
+        peg_ratio_box.innerHTML = peg_ratio_box.innerHTML + 
+            "<h4 id=\"peg-ratio-box\" class=\"stock-value-text\">"+  String(peg_ratio) + "</h4>";
+
+        // Add the market cap data
+        var market_cap_box = document.getElementById("market-cap");
+        market_cap_box.innerHTML = market_cap_box.innerHTML + 
+            "<h4 id=\"market-cap-box\" class=\"stock-value-text\">" + String(market_cap) + "</h4>";
+
+        // Add the book value data
+        var book_value_box = document.getElementById("book-value");
+        book_value_box.innerHTML = book_value_box.innerHTML + 
+            "<h4 id=\"book-value-box\" class=\"stock-value-text\">" + String(book_value) + "</h4>";
+
+        // Add the average volume data
+        var average_volume_box = document.getElementById("average-volume");
+        average_volume_box.innerHTML = average_volume_box.innerHTML + 
+            "<h4 id=\"average-volume-box\" class=\"stock-value-text\">" + String(average_volume) + "</h4>";
+
+        // Add the dividend share data
+        var dividend_share_box = document.getElementById("dividend-share");
+        dividend_share_box.innerHTML = dividend_share_box.innerHTML + 
+            "<h4 id=\"dividend-share-box\" class=\"stock-value-text\">" + String(dividend_share) + "</h4>";
+
+        // Add the dividend yield data
+        var dividend_yield_box = document.getElementById("dividend-yield");
+        dividend_yield_box.innerHTML = dividend_yield_box.innerHTML + 
+            "<h4 id=\"dividend-yield-box\" class=\"stock-value-text\">" + String(dividend_yield) + "</h4>";
+
+        // Add the earnings/share data
+        var earnings_share_box = document.getElementById("earnings-share");
+        earnings_share_box.innerHTML = earnings_share_box.innerHTML + 
+            "<h4 id=\"earnings-share-box\" class=\"stock-value-text\">" + String(earnings_per_share) + "</h4>";
+
+        // Add the ebitda data
+        var ebitda_box = document.getElementById("ebitda");
+        ebitda_box.innerHTML = ebitda_box.innerHTML + 
+            "<h4 id=\"ebitda-box\" class=\"stock-value-text\">" + String(ebitda) + "</h4>";
+
+        // Add the fifty day moving average data
+        var fifty_day_ma_box = document.getElementById("50-day-ma");
+        fifty_day_ma_box.innerHTML = fifty_day_ma_box.innerHTML + 
+            "<h4 id=\"fifty-day-ma-box\" class=\"stock-value-text\">$" + String(fifty_day_ma) + "</h4>";
+    
+        // Add the days high data
+        var days_high_box = document.getElementById("days-high");
+        days_high_box.innerHTML = days_high_box.innerHTML + 
+            "<h4 id=\"days-high-box\" class=\"stock-value-text\">$" + String(days_high) + "</h4>";
+
+        // Add the days low data
+        var days_low_box = document.getElementById("days-low");
+        days_low_box.innerHTML = days_low_box.innerHTML + 
+            "<h4 id=\"days-low-box\" class=\"stock-value-text\">$"  + String(days_low) + "</h4>";
+
+        // Add the year high data
+        var year_high_box = document.getElementById("year-high");
+        year_high_box.innerHTML = year_high_box.innerHTML + 
+            "<h4 id=\"year-high-box\" class=\"stock-value-text\">$" + String(year_high) + "</h4>";
+
+        // Add the year low data
+        var year_low_box = document.getElementById("year-low");
+        year_low_box.innerHTML = year_low_box.innerHTML + 
+            "<h4 id=\"year-low-box\" class=\"stock-value-text\">$" + String(year_low) + "</h4>";
+
+        // Add the 200 day moving average data
+        var two_hundred_day_ma_box = document.getElementById("200-day-ma");
+        two_hundred_day_ma_box.innerHTML = two_hundred_day_ma_box.innerHTML + 
+            "<h4 id=\"two-hundred-day-ma-box\" class=\"stock-value-text\">$" + String(two_hundred_day_ma) + "</h4>";
+    }
+    else if(message_text.indexOf("CompanyDescription") >= 0)
+    {
+        message_text = message_text.replace("CompanyDescription:", "");
+        var description_div = document.getElementById("style-1");
+        description_div.innerHTML = message_text;
+    }
+    else if(message_text.indexOf("DividendHistoryData") >= 0)
+    {
+		message_text = message_text.replace("DividendHistoryData:", "");
+		var dividend_container = document.getElementById("panel-body-1");
+		dividend_container.innerHTML = message_text.replace("table-hover", "").replace("table-striped", "");
+	}
+	else if(message_text.indexOf("DividendRecord") >= 0)
+	{
+		message_text = message_text.replace("DividendRecord:", "");
+		var dividend_record_container = document.getElementById("panel-body-10");
+		dividend_record_container.innerHTML = message_text;
+	}
+	else if(message_text.indexOf("BB") >= 0)
+	{
+		message_text = message_text.replace("BB:", "");
+		var bb_image_container = document.getElementById("bb-image-container");
+		bb_image_container.innerHTML = "<img src=\"/static/pictures/" + String(stock_ticker) + ".png\"></img>";
+		
+		var bb_text_container = document.getElementById("bb-recommendation-container");
+		if(message_text == "GoodCandidate")
+		{
+			bb_text_container.innerHTML = "<h3 style = \"padding-left:1%;\">Bollinger Band history shows buy signal</h3>";
+			bb_text_container.className = "stock-up-text";
+		}
+		else
+		{
+			bb_text_container.innerHTML = "<h3 style=\"padding-left:1%;\">Bollinger Band history says nothing currently</h3>";
+			bb_text_container.className = "stock-down-text";
+		}
+	}
+	else if(message_text.indexOf("Sentiment") >= 0)
+	{
+		message_text = message_text.replace("Sentiment:", "");
+		var sentiment_container = document.getElementById("stock-sentiment");
+		
+		message_text = message_text.split(":");
+		
+		positive = message_text[0];
+		negative = message_text[1];
+		neutral = message_text[2];
+		trump = message_text[3];
+		
+		var positive_articles = document.createElement("h4");
+		var negative_articles = document.createElement("h4");
+		var neutral_articles = document.createElement("h4");
+		
+		var sentiment_message = document.createElement("h4");
+		
+		positive_articles.style = "color:#38B395";
+		positive_articles.innerHTML= "Positive Articles: " + String(positive);
+		
+		negative_articles.style = "color:#BC3D54";
+		negative_articles.innerHTML = "Negative Articles: " + String(negative);
+		
+		neutral_articles.style = "color: #ffffff";
+		neutral_articles.innerHTML = "Neutral Articles: " + String(neutral);
+		
+		if(parseInt(positive) > parseInt(negative))
+		{	
+			sentiment_message.style = "padding-top: 1%;color:#38B395;";
+			sentiment_message.innerHTML = "Overall Stock Sentiment is Positive!";
+		}
+		else if(parseInt(positive) < parseInt(negative))
+		{
+			sentiment_message.style = "pading-top: 1%;color:#BC3D54;";
+			sentiment_message.innerHTML = "Overall Stock Sentiment is Negative!";
+		}
+		else if(parseInt(positive) == parseInt(negative))
+		{
+			sentiment_message.style = "padding-top: 1%;color:#ffffff;";
+			sentiment_message.innerHTML = "Overall Stock Sentiment is Neutral.";
+		}
+		
+		sentiment_container.appendChild(positive_articles);
+		sentiment_container.appendChild(negative_articles);
+		sentiment_container.appendChild(neutral_articles);
+		sentiment_container.appendChild(sentiment_message);
+		
+		// Trump O meter
+		var trump_row = document.createElement("div");
+		trump_row.className = "row";
+		
+		sentiment_container.appendChild(trump_row);
+		
+		var left_div = document.createElement("div");
+		left_div.className = "col-md-4";
+		
+		var middle_div = document.createElement("div");
+		middle_div.className = "col-md-4";
+		
+		var right_div = document.createElement("div");
+		right_div.className = "col-md-4";
+		
+		trump_row.appendChild(left_div);
+		trump_row.appendChild(middle_div);
+		trump_row.appendChild(right_div);
+		
+		middle_div.style = "text-align: center;";
+		middle_div.innerHTML = "<h3 style=\"color: #BC3D54\">Trump-O-Meter &copy;</h3>";
+		
+		var trump_row_2 = document.createElement("div");
+		trump_row_2.className = "row";
+		
+		sentiment_container.appendChild(trump_row_2);
+		
+		// Calculate the trump percentage 
+		var total_number = parseInt(positive) + parseInt(negative) + parseInt(neutral);
+		var trump_percentage = parseInt(trump) / total_number;
+		trump_percentage = Math.ceil(trump_percentage * 100);
+
+		var progress_class = "progress-bar progress-bar-success";
+
+		if(trump_percentage < 20)
+		{
+			progress_class = "progress-bar progress-bar-success";
+		}
+		else if(trump_percentage > 20 && trump_percentage < 30)
+		{
+			progress_class = "progress-bar progress-bar-info";
+		}
+		else if(trump_percentage > 30 && trump_percentage < 60)
+		{
+			progress_class = "progress-bar progress-bar-warning";
+		}
+		else
+		{
+			progress_class = "progress-bar progress-bar-danger";
+		}
+		
+		var left_div = document.createElement("div");
+		left_div.className = "col-md-2";
+		
+		var middle_div = document.createElement("div");
+		middle_div.className = "col-md-8";
+		
+		var right_div = document.createElement("div");
+		right_div.className = "col-md-2";
+		
+		var progress_div = document.createElement("div");
+		progress_div.className = "progress";
+		
+		progress_div.innerHTML = "<div class=\"" + String(progress_class) + "\" role=\"progressbar\" aria-valuenow=\"" + String(trump_percentage) 
+			+ "\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:" + String(trump_percentage) + "%\"></div>";
+			
+		middle_div.appendChild(progress_div)
+			
+		trump_row_2.appendChild(left_div);
+		trump_row_2.appendChild(middle_div);
+		trump_row_2.appendChild(right_div);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+};
+
+
+ws.onclose = function()
+{  };
+
+/* ------------------------------------------------------------------------- */
+/* GoToTicker                                                                */
+/* ------------------------------------------------------------------------- */
+
+function GoToTicker()
+{
+    var ticker_name = document.getElementById("ticker-text").value.trim().toUpperCase();
+
+    ws.send("ValidateTicker:" + String(ticker_name));
+}
+
+
+
+/* ------------------------------------------------------------------------- */
+/* ExecuteQuery                                                              */
+/* ------------------------------------------------------------------------- */
+
+function ExecuteQuery()
+{
+	var query_div = document.getElementById("search");
+	
+	ws.send("ExecuteQuery:" + String(query_div.value.trim()));
+}
+
+
+</script>
+<head>
+    <title id="main-browser-title"></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body class="body" style="background: #2a2c39 !important">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<!-- I want to add in a website logo later on -->
+		<div class="container-fluid">
+            <div class="navbar-header">
+				<a class="navbar-brand" style="color:#ffffff" href="/">InvestmentAggregator</a>
+			</div>
+			
+			<ul class="nav navbar-nav">
+				<li><a href="/investing_tips" style="color:#ffffff">Investing Basics</a></li>
+				<li><a href="/investing_strategies" style="color:#ffffff">Simple Strategies</a></li>
+			</ul>
+			<form class="navbar-form navbar-left" onsubmit="return false;">
+				<div class="input-group">
+					<input type="text" class="form-control" 
+						placeholder="Stock Ticker" id="ticker-text">
+					<div class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="GoToTicker()">
+							<i class="glyphicon glyphicon-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</nav>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" id="company-description">
+                <h3 style="text-align: left;" class = "title-color" id="company-description-title"></h3>
+				<div class="scroll-box" id="style-1">
+                    
+                    <h4 style="color:#ffffff;text-align:center;vertical-align:middle;line-height:173px;">Loading...</h4>
+
+                    <!--
+					<h3 style="color:#ffffff;padding-left:0.5%;padding-right:0.5%">Lorem ipsum</h3>
+					
+					<p class="description-text">
+					dolor sit amet, consectetur adipiscing elit. Fusce justo magna, dictum eu mollis eu, 
+					pulvinar sed elit. Sed eu venenatis quam. Sed in urna luctus, vulputate leo vel, consectetur mi. 
+					Duis tempor orci odio, ac efficitur justo mollis eu. Nullam sit amet sapien quam. Phasellus pharetra 
+					vestibulum lorem, nec tempor odio sagittis et. Aliquam eu viverra nunc. Praesent aliquam malesuada 
+					lacus id euismod. Donec lacinia aliquet sapien ac imperdiet. Pellentesque congue mauris viverra nisi 
+					blandit consectetur.
+					</p>
+
+					<p class="description-text">
+					Vestibulum purus turpis, ornare id eros nec, luctus suscipit eros. Phasellus fermentum blandit libero, 
+					quis euismod tellus rhoncus ac. Donec feugiat sit amet nibh quis ornare. Quisque nulla sem, porttitor 
+					et mauris in, vestibulum dictum turpis. Morbi ut porttitor magna. Morbi suscipit justo a tortor elementum, 
+					at luctus massa tempor. Donec pulvinar auctor neque, non tempus turpis volutpat in. Donec dui massa, 
+					tempus eget augue sed, mollis euismod lectus. Ut a turpis a sem dignissim aliquam sed ut augue. Etiam 
+					volutpat mauris facilisis lectus consequat, in sodales lorem luctus. Lorem ipsum dolor sit amet, consectetur 
+					adipiscing elit. Cras bibendum urna sit amet augue gravida, ac scelerisque dolor suscipit. Sed elementum 
+					nisl at ante vestibulum posuere. Etiam sagittis viverra neque at pellentesque. Aenean sed dolor sed diam 
+					lobortis vestibulum. Pellentesque egestas fermentum mauris, eu faucibus mauris commodo non.
+					<p></p>
+
+					<p class="description-text">
+					Donec in odio feugiat, gravida enim sollicitudin, euismod nunc. Class aptent taciti sociosqu ad litora 
+					torquent per conubia nostra, per inceptos himenaeos. Ut dignissim ornare libero. Praesent id venenatis 
+					nisi, quis faucibus felis. Praesent blandit euismod ante. Morbi ac leo tincidunt, egestas risus et, faucibus 
+					tortor. Morbi vestibulum dolor eget nisi maximus interdum.
+					</p>
+
+					<p class="description-text">
+					Nunc luctus justo nibh, eu sollicitudin enim vulputate id. Vivamus sollicitudin felis vel varius faucibus. 
+					Curabitur in luctus nisl. Nulla lectus turpis, ullamcorper vel pharetra at, cursus at ante. Curabitur molestie 
+					arcu eget mauris aliquet, ac placerat turpis egestas. Donec porttitor imperdiet lectus et scelerisque. Aenean 
+					commodo diam id sem ultrices, vitae consequat ex scelerisque. Integer ut lectus ut nisl feugiat laoreet. 
+					Pellentesque venenatis fermentum sapien, eget rutrum nunc accumsan eget. Nulla tristique purus nec tellus rhoncus 
+					pharetra. Proin nisl tortor, imperdiet et tellus nec, tincidunt tincidunt quam. Suspendisse cursus odio vitae 
+					nisl scelerisque malesuada. Cras blandit est at nisi vulputate fermentum. Aliquam iaculis vehicula lorem. Fusce 
+					eros lorem, pellentesque eu urna vitae, finibus ornare urna. Vivamus nec nunc non ante euismod pharetra ac sit amet lorem.
+					</p>
+
+					<p class="description-text">
+					Donec libero nunc, vestibulum id molestie at, ornare vel erat. Maecenas placerat, urna eget volutpat 
+					porttitor, purus purus ornare augue, sed ullamcorper justo tortor ut neque. Nulla facilisi. Sed sem 
+					augue, mattis vel nisl eu, egestas facilisis libero. Curabitur laoreet vitae justo eu ullamcorper. Fusce 
+					tellus ipsum, ullamcorper nec nibh vitae, suscipit finibus velit. Quisque porttitor pulvinar blandit. 
+					Donec mollis tristique neque, in ultrices nunc euismod quis. Sed quam diam, dapibus vitae sagittis et, 
+					lobortis ac urna. Quisque vitae purus eget lacus ultricies accumsan eget a dolor. Interdum et malesuada 
+					fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam 
+					efficitur lorem nisl, vel ultrices nulla congue id. Sed fermentum, nibh sed tempus pulvinar, massa magna 
+					pharetra velit, a gravida mauris eros eu mauris. Donec dapibus mauris at eros pretium, ornare posuere 
+					mauris consequat.
+                    </p>-->
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="stock-title">
+                <h3 style="text-align:left;" class="title-color">Stock Overview</h3>
+            </div>
+		</div>
+        
+        <div class="row">
+            <div class="col-md-3" id="stock-data">
+                <!-- B8BABA -->
+				<h4 class="stock-info-text" id="price">Price:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="percent-change">Daily Change:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="previous-close">Previous Close:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="open">Open:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="volume">Volume:&nbsp;&nbsp;</h4>
+            </div>
+        
+			<div class="col-md-3">
+				<h4 class="stock-info-text" id="pe-ratio">P/E Ratio:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="peg-ratio">PEG Ratio:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="market-cap">Market Cap:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="book-value">Book Value:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="average-volume">Average Volume:&nbsp;&nbsp;</h4>
+			</div>
+			
+			<div class="col-md-3">
+				<h4 class="stock-info-text" id="dividend-share">Dividend Share:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="dividend-yield">Dividend Yield:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="earnings-share">Earnings/Share:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="ebitda">Ebitda:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="50-day-ma">50 Day MA:&nbsp;&nbsp;</h4>
+			</div>
+			
+			<div class="col-md-3">
+				<h4 class="stock-info-text" id="days-high">Days High:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="days-low">Days Low:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="year-high">Year High:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="year-low">Year Low:&nbsp;&nbsp;</h4>
+				<h4 class="stock-info-text" id="200-day-ma">200 Day MA:&nbsp;&nbsp;</h4>
+			</div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12" id="stock-title">
+                <h3 style="text-align: left;padding-bottom:1%;" class="title-color">Graphs &amp; Charts</h3>
+            </div>
+		</div>
+
+        <div class="row">
+			<div class="col-md-8" id="tradingview-container">
+				<script type="text/javascript" src="https://d33t3vvu2t2yu5.cloudfront.net/tv.js"></script>
+				<script type="text/javascript">
+					new TradingView.widget({
+					  "width": 1200,
+					  "height": 610,
+					  "symbol": String(stock_ticker),
+					  "interval": "D",
+					  "timezone": "America/Chicago",
+					  "theme": "White",
+					  "style": "1",
+					  "locale": "en",
+					  "toolbar_bg": "#f1f3f6",
+					  "enable_publishing": false,
+					  "allow_symbol_change": true,
+					  "hideideas": true,
+					  "studies": [
+						"BB@tv-basicstudies",
+						"MASimple@tv-basicstudies",
+						"MACD@tv-basicstudies",
+						"RSI@tv-basicstudies"
+					  ]
+					});
+				</script> 
+			</div>
+			
+			<div class="col-md-4" id="stocktwits-container">
+				<div id="stocktwits-widget-news"></div><a href='http://stocktwits.com' style='font-size: 0px;'>StockTwits</a>
+				<script type="text/javascript" src="https://stocktwits.com/addon/widget/2/widget-loader.min.js"></script>
+				<script type="text/javascript">
+					STWT.Widget({
+						container: 'stocktwits-widget-news', 
+						symbol: String(stock_ticker), 
+						width: '500', 
+						height: '610', limit: '100', 
+						scrollbars: 'true', 
+						streaming: 'true', 
+						title: String(stocktwits_title), 
+						style: {
+							link_color: '4871a8', 
+							link_hover_color: '4871a8', 
+							header_text_color: '000000', 
+							border_color: 'cecece', 
+							divider_color: 'cecece', 
+							divider_color: 'cecece', 
+							divider_type: 'solid', 
+							box_color: 'f5f5f5', 
+							stream_color: 'ffffff', 
+							text_color: '000000', 
+							time_color: '999999'}
+						});
+				</script>			
+			</div>
+		</div>
+		
+        <div class="row">
+            <div class="col-md-12" id="stock-title-1">
+                <h3 style="text-align: left;padding-bottom:1%;" class="title-color">Dividend Information:</h3>
+            </div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-dividend-history">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-dividend-history" data-target="#collapse-4" aria-expanded="false">
+						<h4 class="panel-title">Dividend Overview</h4>
+					</div>
+					<div id="collapse-4" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-4" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-4-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-dividends">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-dividend-record" data-target="#collapse-1" aria-expanded="false">
+						<h4 class="panel-title">Full Dividend History</h4>
+					</div>
+					<div id="collapse-1" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-1" class="panel-body">
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-dividend-record">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-dividends" data-target="#collapse-10" aria-expanded="false">
+						<h4 class="panel-title">Dividend Stripping Information</h4>
+					</div>
+					<div id="collapse-10" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-10" class="panel-body">
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <div class="row">
+            <div class="col-md-12" id="stock-title-2">
+                <h3 style="text-align: left;padding-bottom:1%;" class="title-color">Bollinger Bands:</h3>
+            </div>
+		</div>
+		<div class="row">
+			<div class="col-md-12" id="bb-image-container">
+				<h4 style="color:#ffffff">Loading...</h4>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12" id="bb-recommendation-container">
+			
+			</div>
+		</div>
+		
+
+        <div class="row">
+            <div class="col-md-12" id="stock-title-2">
+                <h3 style="text-align: left;padding-bottom:1%;" class="title-color">Sentiment Analysis:</h3>
+            </div>
+		</div>
+		<div class="row">
+			<div class="col-md-12" id="stock-sentiment">
+			
+			</div>
+		</div>
+
+        <div class="row">
+			<div class="col-md-12" id="stock-title-3">
+				<h3 style="text-align: left;padding-botton:1%;" class="title-color">External Website Overviews:</h3>
+			</div>
+        </div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-stockinvest">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-stockinvest" data-target="#collapse-2" aria-expanded="false">
+						<h4 class="panel-title">Stockinvest.com</h4>
+					</div>
+					<div id="collapse-2" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-2" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-2-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-zachs">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-zachs" data-target="#collapse-3" aria-expanded="false">
+						<h4 class="panel-title">Zachs.com</h4>
+					</div>
+					<div id="collapse-3" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-3" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-3-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-stockflare">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-stockflare" data-target="#collapse-11" aria-expanded="false">
+						<h4 class="panel-title">Stockflare.com</h4>
+					</div>
+					<div id="collapse-11" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-11" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-11-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+        <div class="row">
+            <div class="col-md-12" id="stock-title-3">
+                <h3 style="text-align: left;padding-bottom:1%;" class="title-color">Financial Overview:</h3>
+            </div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-financial-1">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-financial-1" data-target="#collapse-5" aria-expanded="false">
+						<h4 class="panel-title">EPS Chart</h4>
+					</div>
+					<div id="collapse-5" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-5" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-5-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-financial-2">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-financial-2" data-target="#collapse-6" aria-expanded="false">
+						<h4 class="panel-title">Financial Overview</h4>
+					</div>
+					<div id="collapse-6" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-6" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-6-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-financial-3">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-financial-3" data-target="#collapse-7" aria-expanded="false">
+						<h4 class="panel-title">Income Statements</h4>
+					</div>
+					<div id="collapse-7" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-7" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-7-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-financial-4">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-financial-4" data-target="#collapse-8" aria-expanded="false">
+						<h4 class="panel-title">Balance Statements</h4>
+					</div>
+					<div id="collapse-8" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-8" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-8-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default" id="main-panel-financial-5">
+					<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#main-panel-financial-5" data-target="#collapse-9" aria-expanded="false">
+						<h4 class="panel-title">Earnings Expectations</h4>
+					</div>
+					<div id="collapse-9" class="panel-collapse collapse" aria-expanded="false" style="height:0px;">
+						<div id="panel-body-9" class="panel-body">
+							<div style="margin: 0 auto; width:100%; height:1000px;" id="panel-body-9-div">
+							</div>						
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12" style="padding-bottom:5%">
+			</div>
+		</div>
+		
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p id="footer-text" class="text-muted"></p>
+        </div>
+    </footer>
+
+
+
+
+
+</body>
+
+
+
+
+
+
+
+
+
+</html>
